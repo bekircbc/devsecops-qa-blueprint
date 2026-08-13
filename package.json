@@ -2,7 +2,7 @@
   "name": "devsecops-qa-blueprint",
   "version": "1.0.0",
   "description": "Production-ready DevSecOps and QA Blueprint",
-  "main": "src/index.js",
+  "main": "src/users.ts",
   "devDependencies": {
     "@axe-core/playwright": "^4.10.1",
     "@playwright/test": "^1.49.0",
@@ -15,8 +15,8 @@
     "typescript": "^6.0.3"
   },
   "scripts": {
-    "start": "node src/index.js",
-    "dev": "node --watch src/index.js",
+    "start": "node src/users.ts",
+    "dev": "node --watch src/users.ts",
     "prepare": "husky",
     "lint": "eslint 'src/**/*.{js,ts,tsx}' --no-error-on-unmatched-pattern",
     "lint:fix": "eslint 'src/**/*.{js,ts,tsx}' --fix",
