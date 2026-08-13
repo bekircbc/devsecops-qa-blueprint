@@ -5,7 +5,7 @@ FROM node:22-alpine AS builder
 
 WORKDIR /app
 
-RUN apk update && apk upgrade --no-cache
+# RUN apk update && apk upgrade --no-cache
 
 # Copy dependency manifests
 COPY package*.json ./
@@ -26,7 +26,7 @@ WORKDIR /app
 # Set production environment
 ENV NODE_ENV=production
 
-RUN apk update && apk upgrade --no-cache
+# RUN apk update && apk upgrade --no-cache
 
 # Security Best Practice: Run as non-root user
 USER node
