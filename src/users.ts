@@ -7,7 +7,6 @@ interface User {
   role: string;
 }
 
-// Mock database records
 const users: User[] = [
   { id: 1, name: 'Alice Smith', email: 'alice@sirina.de', role: 'DevSecOps Engineer' },
   { id: 2, name: 'Bob Jones', email: 'bob@sirina.de', role: 'QA Automation Lead' },
@@ -20,18 +19,65 @@ const server = http.createServer((req: IncomingMessage, res: ServerResponse) => 
   const url = req.url || '';
   const method = req.method || 'GET';
 
-  // Set standard CORS and JSON headers
+  // 1. Serve accessible HTML page for /users and /
+  if (method === 'GET' && (url === '/users' || url === '/')) {
+    res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+    res.end(`<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Users Management - Sirina International</title>
+  <style>
+    body { font-family: system-ui, sans-serif; padding: 2rem; background: #f8f9fa; color: #212529; }
+    h1 { color: #0d6efd; }
+    table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+    th, td { padding: 0.75rem; text-align: left; border-bottom: 1px solid #dee2e6; }
+    th { background-color: #e9ecef; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Users Management</h1>
+    <p>Production user accounts and role assignments.</p>
+    <table>
+      <thead>
+        <tr>
+          <th scope="col">ID</th>
+          <th scope="col">Name</th>
+          <th scope="col">Email</th>
+          <th scope="col">Role</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${users.map(u => `
+          <tr>
+            <td>${u.id}</td>
+            <td>${u.name}</td>
+            <td>${u.email}</td>
+            <td>${u.role}</td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+  </main>
+</body>
+</html>`);
+    return;
+  }
+
+  // 2. Set JSON headers for REST API routes
   res.setHeader('Content-Type', 'application/json');
   res.setHeader('Access-Control-Allow-Origin', '*');
 
-  // GET /api/v1/users - Return all users
+  // GET /api/v1/users
   if (method === 'GET' && url === '/api/v1/users') {
     res.writeHead(200);
     res.end(JSON.stringify({ status: 'success', data: users }));
     return;
   }
 
-  // GET /api/v1/users/:id - Return single user by ID
+  // GET /api/v1/users/:id
   const userMatch = url.match(/^\/api\/v1\/users\/(\d+)$/);
   if (method === 'GET' && userMatch) {
     const userId = parseInt(userMatch[1], 10);
@@ -47,19 +93,18 @@ const server = http.createServer((req: IncomingMessage, res: ServerResponse) => 
     return;
   }
 
-  // Health check endpoint for CI/CD and Docker probes
-  if (method === 'GET' && (url === '/' || url === '/health')) {
+  // Health check endpoint
+  if (method === 'GET' && url === '/health') {
     res.writeHead(200);
     res.end(JSON.stringify({ status: 'healthy', timestamp: new Date().toISOString() }));
     return;
   }
 
-  // 404 Fallback for unknown routes
+  // 404 Fallback
   res.writeHead(404);
   res.end(JSON.stringify({ status: 'error', message: 'Route not found' }));
 });
 
-// Start persistent HTTP server listening on configured PORT
 server.listen(PORT, () => {
-  console.log(`[Server] REST API service listening at http://localhost:${PORT}`);
+  console.log(`[Server] Web application listening at http://localhost:${PORT}`);
 });
