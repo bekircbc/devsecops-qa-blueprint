@@ -1,5 +1,8 @@
 {
   "devDependencies": {
+    "@axe-core/playwright": "^4.10.1",
+    "@playwright/test": "^1.49.0",
+    "@types/node": "^26.2.0",
     "@typescript-eslint/eslint-plugin": "^8.67.0",
     "@typescript-eslint/parser": "^8.67.0",
     "eslint": "^8.57.0",
@@ -11,7 +14,10 @@
     "prepare": "husky",
     "lint": "eslint 'src/**/*.{js,ts,tsx}' --no-error-on-unmatched-pattern",
     "lint:fix": "eslint 'src/**/*.{js,ts,tsx}' --fix",
-    "security:secret-scan": "gitleaks detect --source . --verbose"
+    "security:secret-scan": "gitleaks detect --source . --verbose",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:a11y": "playwright test tests/a11y.spec.ts"
   },
   "lint-staged": {
     "*.{js,ts,tsx}": [
