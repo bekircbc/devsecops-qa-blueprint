@@ -1,6 +1,3 @@
-#!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
-
 echo "🛡️ [Husky] Running pre-commit security & quality checks..."
 
 # STEP 1: Run lint-staged on modified files
