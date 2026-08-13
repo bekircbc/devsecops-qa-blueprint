@@ -1,9 +1,11 @@
 # ==============================================================================
 # Build Stage: Multi-stage build to reduce final image size and attack surface
 # ==============================================================================
-FROM node:20-alpine AS builder
+FROM node:22-alpine AS builder
 
 WORKDIR /app
+
+RUN apk update && apk upgrade --no-cache
 
 # Copy dependency manifests
 COPY package*.json ./
@@ -17,12 +19,14 @@ COPY . .
 # ==============================================================================
 # Production Stage: Minimal, secure runtime environment
 # ==============================================================================
-FROM node:20-alpine AS runner
+FROM node:22-alpine AS runner
 
 WORKDIR /app
 
 # Set production environment
 ENV NODE_ENV=production
+
+RUN apk update && apk upgrade --no-cache
 
 # Security Best Practice: Run as non-root user
 USER node
