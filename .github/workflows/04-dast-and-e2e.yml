@@ -36,7 +36,7 @@ jobs:
           target: 'https://www.zaproxy.org/'
           # add if you need more specific rules table
           # rules_file_name: '.zap/rules.tsv'
-          cmd_options: '-a'
+          cmd_options: '-a -m 3' # -m 3 limits spidering to 3 minutes
           fail_action: false # Keeps workflow alive if vulnerabilities are detected
 
       # STEP 2: Setup Environment for Playwright E2E & A11y
