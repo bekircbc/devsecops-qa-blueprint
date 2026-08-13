@@ -17,9 +17,9 @@ RUN npm ci
 COPY . .
 
 # ==============================================================================
-# Production Stage: Minimal, secure runtime environment
+# Production Stage: Chainguard Zero-CVE Secure Minimal Runtime
 # ==============================================================================
-FROM node:22-alpine AS runner
+FROM cgr.dev/chainguard/node:latest AS runner
 
 WORKDIR /app
 
