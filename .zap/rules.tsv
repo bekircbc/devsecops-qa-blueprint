@@ -1,0 +1,8 @@
+# OWASP ZAP Rule Configuration File
+# Format: <rule_id> <action> [comment]
+# Actions: IGNORE, WARN, FAIL
+
+10020	WARN	(X-Frame-Options Header Not Set)
+10021	WARN	(X-Content-Type-Options Header Missing)
+10038	IGNORE	(User Controllable Charset - Ignore in test environment)
+10096	WARN	(Timestamp Disclosure)
