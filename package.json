@@ -1,6 +1,7 @@
 {
   "name": "devsecops-qa-blueprint",
   "version": "1.0.0",
+  "type": "module",
   "description": "Production-ready DevSecOps and QA Blueprint",
   "main": "src/users.ts",
   "devDependencies": {
@@ -12,11 +13,12 @@
     "eslint": "^8.57.0",
     "husky": "^9.0.11",
     "lint-staged": "^15.2.2",
+    "tsx": "^4.23.12",
     "typescript": "^6.0.3"
   },
   "scripts": {
-    "start": "node src/users.ts",
-    "dev": "node --watch src/users.ts",
+    "start": "npx tsx src/users.ts",
+    "dev": "npx tsx --watch src/users.ts",
     "prepare": "husky",
     "lint": "eslint 'src/**/*.{js,ts,tsx}' --no-error-on-unmatched-pattern",
     "lint:fix": "eslint 'src/**/*.{js,ts,tsx}' --fix",
