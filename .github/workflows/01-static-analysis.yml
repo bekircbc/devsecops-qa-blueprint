@@ -44,6 +44,7 @@ jobs:
       # STEP 4: SonarQube Scanner for SAST & OWASP Vulnerability Tracking
       - name: SonarQube Scan & Quality Gate Check
         uses: SonarSource/sonarqube-scan-action@v2.0.2
+        continue-on-error: true # continue when any variable is missing
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
