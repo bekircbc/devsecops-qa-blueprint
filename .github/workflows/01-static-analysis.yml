@@ -1,0 +1,56 @@
+name: 01 - SAST & Secret Detection
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:
+  # run once a day at 4 AM
+  # schedule:
+  #  - cron: "0 4 * * *" 
+
+jobs:
+  secret-and-sast-scan:
+    name: Run Gitleaks & ESLint Security
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      # STEP 1: Scan repository for hardcoded secrets
+      - name: Secret Scanning (Gitleaks)
+        uses: gitleaks/gitleaks-action@v3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # STEP 2: Install Dependencies
+      - name: Setup Node.js
+        uses: actions/setup-node@v6 # v7 is also available
+        with:
+          node-version: '24'
+          cache: 'npm'
+
+      - name: Install Project Dependencies
+        run: npm ci --prefer-offline
+
+      # STEP 3: Run Linter for Code Quality and Security Rules
+      - name: Execute ESLint & Security Checks
+        run: npm run lint
+
+      # STEP 4: SonarQube Scanner for SAST & OWASP Vulnerability Tracking
+      - name: SonarQube Scan & Quality Gate Check
+        uses: SonarSource/sonarqube-scan-action@v2.0.2
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+        with:
+          args: >
+            -Dsonar.projectKey=devsecops-qa-blueprint
+            -Dsonar.sources=src
+            -Dsonar.tests=src
+            -Dsonar.test.inclusions=**/*.test.ts,**/*.spec.ts
+            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info

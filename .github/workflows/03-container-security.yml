@@ -1,0 +1,56 @@
+name: 03 - Container Security & Vulnerability Scan
+
+on:
+  push:
+    branches: 
+    - main
+  pull_request:
+    branches: 
+    - main
+  # cronjob if needed
+  # schedule:
+  #  - cron: '0 0 * * *'  # Run daily at midnight UTC
+  workflow_dispatch:  # Allow manual triggering
+
+jobs:
+  container-security:
+    name: Docker Build & Trivy Image Scan
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write # Allows uploading SARIF reports to GitHub Security
+
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      # STEP 1: Build Local Docker Image
+      - name: Build Docker Image
+        run: |
+          docker build -t local-app-image:${{ github.sha }} .
+
+      # STEP 2: Scan Container Image with Trivy
+      # NOTE: Placed BEFORE registry upload. If scan fails, image is NEVER pushed.
+      - name: Run Trivy Container Scanner
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          image-ref: 'local-app-image:${{ github.sha }}'
+          format: 'json'
+          output: 'trivy-results.json'
+          exit-code: '1'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
+
+      # STEP 3: Enforce Custom Security Thresholds Script
+      - name: Enforce Security Thresholds
+        run: |
+          chmod +x ./scripts/security-threshold-check.sh
+          ./scripts/security-threshold-check.sh trivy-results.json
+
+      # STEP 4: Push to Registry (Executes ONLY if Trivy Scan passes)
+      - name: Push Image to Registry
+        if: success()
+        run: |
+          echo "Trivy Scan and Security Thresholds Passed. Proceeding with container registry push..."
+          # docker push my-registry/app:${{ github.sha }}

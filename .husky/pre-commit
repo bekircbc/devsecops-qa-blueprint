@@ -1,0 +1,26 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+echo "🛡️ [Husky] Running pre-commit security & quality checks..."
+
+# STEP 1: Run lint-staged on modified files
+echo "Running lint-staged..."
+npx lint-staged
+if [ $? -ne 0 ]; then
+  echo "❌ [Husky] Linting failed. Fix errors before committing."
+  exit 1
+fi
+
+# STEP 2: Quick Gitleaks check for staged secrets (if gitleaks is installed locally)
+if command -v gitleaks &> /dev/null; then
+  echo "Scanning staged files for hardcoded secrets..."
+  gitleaks protect --staged --verbose
+  if [ $? -ne 0 ]; then
+    echo "🚨 [Husky] SECRET DETECTED! Commit aborted to prevent credential leak."
+    exit 1
+  fi
+else
+  echo "⚠️ Gitleaks CLI not found locally. Skipping local secret check (CI/CD will catch it)."
+fi
+
+echo "✅ [Husky] All pre-commit checks passed successfully!"
